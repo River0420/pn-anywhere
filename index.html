@@ -291,7 +291,7 @@ footer a{color:var(--soft)}
         <path d="M3 5.5 10.2 4.5v7H3v-6zM11.3 4.3 21 3v8.5h-9.7V4.3zM3 12.5h7.2v7L3 18.5v-6zm8.3 0H21V21l-9.7-1.3v-7.2z"/>
       </svg>
       <span class="lines"><span class="top">下載 Windows 版</span>
-        <span class="sub">免安裝，解壓即用</span></span>
+        <span class="sub">解壓縮後就能用，不用安裝</span></span>
     </a>
     <a class="btn btn-2"
        href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-macOS-AppleSilicon.zip">
@@ -478,12 +478,25 @@ footer a{color:var(--soft)}
 
     <div class="pass">
       <div class="tag">第一關　·　Windows</div>
-      <h3>藍色的「Windows 已保護您的電腦」</h3>
-      <p class="said">畫面上只有一顆「不執行」，看起來沒有別的選擇</p>
+      <h3>先解壓縮，然後點「PN Anywhere.exe」</h3>
+      <p class="said">下載到的是一個 zip，直接在裡面點會失敗</p>
       <ol>
-        <li>點左邊那行小字「<b>其他資訊</b>」</li>
-        <li>下面會多出一顆「<b>仍要執行</b>」→ 按下去</li>
+        <li>對著下載的 zip 按<b>右鍵</b> →「<b>解壓縮全部</b>」
+          <span class="hit">不要直接在壓縮檔裡點</span><br>
+          <span style="color:var(--muted); font-size:13.3px">
+            Windows 會把壓縮檔假裝成資料夾，讓你點得下去 ——
+            但程式需要的檔案沒有一起出來，一定失敗，而且不會告訴你原因。</span></li>
+        <li>進到解壓出來的「PN Anywhere」資料夾 → 點 <b>PN Anywhere.exe</b></li>
+        <li>跳出藍色的「Windows 已保護您的電腦」→ 點左邊那行小字
+          「<b>其他資訊</b>」→ 下面會多出「<b>仍要執行</b>」→ 按下去</li>
       </ol>
+      <p class="after">
+        資料夾裡還有一個 <code>app-files</code> 和一個
+        <b>PN Anywhere-打不開時點這個.exe</b>。
+        <b>平常都不用理它們</b> —— 前者是程式本體的零件，後者只在
+        「點了正常版完全沒反應」的時候才用得到，它會開一個黑色視窗把
+        卡在哪一步印出來。
+      </p>
     </div>
 
     <div class="pass">
@@ -536,7 +549,7 @@ footer a{color:var(--soft)}
     <a class="btn btn-1"
        href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-Windows.zip">
       <span class="lines"><span class="top">下載 Windows 版</span>
-        <span class="sub">免安裝，解壓即用</span></span>
+        <span class="sub">解壓縮後就能用，不用安裝</span></span>
     </a>
     <a class="btn btn-2"
        href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-macOS-AppleSilicon.zip">
