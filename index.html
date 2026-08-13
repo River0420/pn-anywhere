@@ -3,382 +3,571 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PN Anywhere —— 電子業料號速查工具</title>
-<meta name="description" content="按一組熱鍵就從任何軟體裡查料號。打字就直接找，資料只留在你自己的電腦。Windows / macOS 免安裝。">
-<meta property="og:title" content="PN Anywhere">
-<meta property="og:description" content="按一組熱鍵就從任何軟體裡查料號。打字就直接找，資料只留在你自己的電腦。">
+<title>PN Anywhere —— 查料號不用再開 Excel、不用寫 VLOOKUP</title>
+<meta name="description" content="按一組快捷鍵，在任何軟體裡查到料號的價格、庫存、交期。價格表、庫存表、供應商表用料號串起來，要哪幾欄自己選。資料只留在你自己的電腦。">
+<meta property="og:title" content="PN Anywhere —— 查料號不用再開 Excel">
+<meta property="og:description" content="按一組快捷鍵，在任何軟體裡查到料號的價格、庫存、交期。資料不離開你的電腦。">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='20' y='18' width='60' height='64' rx='8' fill='%232F3336'/><g fill='%23C9A227'><rect x='4' y='24.5' width='20' height='11' rx='3'/><rect x='4' y='44.5' width='20' height='11' rx='3'/><rect x='4' y='64.5' width='20' height='11' rx='3'/><rect x='76' y='24.5' width='20' height='11' rx='3'/><rect x='76' y='44.5' width='20' height='11' rx='3'/><rect x='76' y='64.5' width='20' height='11' rx='3'/></g><circle cx='32' cy='31' r='6.5' fill='%23FAF9F5'/></svg>">
 
 <style>
 :root{
   --bg:#FAF9F5; --surface:#FFFFFF; --border:#E8E4DA; --border-soft:#F0EDE5;
   --text:#2B2A26; --soft:#6B675C; --muted:#9B9689;
-  --accent:#C96442; --accent-hover:#B85838; --accent-soft:#F6EAE3;
+  --accent:#C96442; --accent-soft:#F6EAE3; --ink:#22211E;
   --shadow:0 1px 2px rgba(43,42,38,.05), 0 8px 24px rgba(43,42,38,.07);
+  --shadow-lg:0 2px 6px rgba(43,42,38,.06), 0 24px 60px rgba(43,42,38,.12);
 }
 @media (prefers-color-scheme:dark){
   :root{
     --bg:#1A1917; --surface:#232220; --border:#35332E; --border-soft:#2B2A27;
     --text:#EDEAE3; --soft:#A9A497; --muted:#7C776C;
-    --accent:#E0805E; --accent-hover:#EE9271; --accent-soft:#33261F;
+    --accent:#E0805E; --accent-soft:#33261F; --ink:#EDEAE3;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    --shadow-lg:0 2px 6px rgba(0,0,0,.35), 0 24px 60px rgba(0,0,0,.5);
   }
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
   margin:0; background:var(--bg); color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei UI",
     "PingFang TC","Noto Sans TC",system-ui,sans-serif;
-  line-height:1.7; -webkit-font-smoothing:antialiased;
+  line-height:1.75; -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:760px; margin:0 auto; padding:0 24px}
-
-/* ---------- hero ---------- */
-/* 第一頁要塞得下四樣東西：這是什麼、長什麼樣、下載、會被系統擋。
-   所以標題區壓到最小 —— 每多一行說明，下載按鈕就往下掉一行。
-   細節不是不寫，是搬到下面去寫。 */
-header{padding:34px 0 4px; text-align:center}
-.logo{width:60px; height:60px; margin-bottom:16px}
-h1{font-size:clamp(34px,6vw,46px); line-height:1.2; margin:0 0 14px; letter-spacing:-.02em}
-.tagline{font-size:clamp(17px,2.5vw,20px); color:var(--soft); margin:0 auto 6px; max-width:30em}
+.wrap{max-width:860px; margin:0 auto; padding:0 24px}
 .kbd{
-  display:inline-block; padding:2px 8px; margin:0 2px; border-radius:6px;
+  display:inline-block; padding:2px 9px; margin:0 2px; border-radius:6px;
   border:1px solid var(--border); background:var(--surface);
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   font-size:.86em; color:var(--text); white-space:nowrap;
 }
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.9em}
 
-/* ---------- 下載按鈕 ---------- */
-.downloads{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:26px 0 12px}
+/* ---------- 頂部 ---------- */
+.bar{
+  position:sticky; top:0; z-index:20;
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid transparent; transition:border-color .2s;
+}
+.bar.stuck{border-bottom-color:var(--border)}
+.bar .inner{
+  max-width:860px; margin:0 auto; padding:11px 24px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.brand{display:flex; align-items:center; gap:9px; font-weight:700; font-size:16.5px}
+.brand svg{width:24px; height:24px}
+.bar .mini{
+  background:var(--ink); color:var(--bg); text-decoration:none;
+  padding:8px 18px; border-radius:100px; font-size:14px; font-weight:600;
+}
+.bar .mini:hover{opacity:.85}
+
+/* ---------- 第一頁 ---------- */
+.hero{padding:70px 0 0; text-align:center}
+h1{
+  font-size:clamp(38px,7.2vw,64px); line-height:1.14; margin:0 0 22px;
+  letter-spacing:-.035em; font-weight:800;
+}
+h1 .dim{color:var(--muted)}
+.lede{font-size:clamp(16.5px,2.2vw,19px); color:var(--soft); margin:0 auto; max-width:26em}
+.lede b{color:var(--text); font-weight:600}
+
+.cta{display:flex; gap:13px; justify-content:center; flex-wrap:wrap; margin:34px 0 0}
 .btn{
-  display:flex; align-items:center; gap:13px; text-decoration:none;
-  padding:17px 30px; border-radius:13px; min-width:236px;
-  border:1px solid transparent; transition:transform .12s ease, box-shadow .12s ease;
+  display:flex; align-items:center; gap:11px; text-decoration:none;
+  padding:15px 27px; border-radius:100px; min-width:212px;
+  border:1px solid transparent; font-weight:600; transition:transform .12s ease;
 }
 .btn:hover{transform:translateY(-2px)}
-.btn:active{transform:translateY(0)}
-.btn svg{width:26px; height:26px; flex:none}
-.btn .lines{display:flex; flex-direction:column; align-items:flex-start; line-height:1.3}
-.btn .top{font-size:16.5px; font-weight:650}
-.btn .sub{font-size:12.5px; opacity:.72; font-weight:400}
-.btn-win{background:var(--accent); color:#fff; box-shadow:var(--shadow)}
-.btn-win:hover{background:var(--accent-hover)}
-.btn-mac{background:var(--surface); color:var(--text); border-color:var(--border); box-shadow:var(--shadow)}
-.btn-mac:hover{border-color:var(--muted)}
-.under{text-align:center; color:var(--muted); font-size:13.5px; margin:0 0 4px}
-.under a{color:var(--soft)}
+.btn svg{width:22px; height:22px; flex:none}
+.btn .lines{display:flex; flex-direction:column; align-items:flex-start; line-height:1.25}
+.btn .top{font-size:15.5px}
+.btn .sub{font-size:12px; opacity:.7; font-weight:400}
+.btn-1{background:var(--ink); color:var(--bg); box-shadow:var(--shadow)}
+.btn-1:hover{opacity:.88}
+.btn-2{background:var(--surface); color:var(--text); border-color:var(--border); box-shadow:var(--shadow)}
+.btn-2:hover{border-color:var(--muted)}
 
-/* 測試期。用中性的灰、不用警告色 —— 這不是壞消息，
-   但一定要在按下載之前就看得到，不然到期那天感覺是被騙。 */
-.beta{
-  max-width:640px; margin:16px auto 0; text-align:center;
-  font-size:13.5px; color:var(--soft);
+.beneath{margin:18px auto 0; font-size:13px; color:var(--muted); line-height:1.9}
+.beneath b{color:var(--soft)}
+.warnlink{
+  color:var(--accent); text-decoration:none; font-weight:600;
+  border-bottom:1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* ---------- 速度 ---------- */
+.compare{
+  margin:66px auto 0; max-width:660px;
   background:var(--surface); border:1px solid var(--border);
-  border-radius:10px; padding:11px 18px;
+  border-radius:20px; padding:30px 30px 24px; box-shadow:var(--shadow);
 }
-.beta b{color:var(--text)}
-.counter{font-variant-numeric:tabular-nums; color:var(--soft)}
-
-/* ---------- 畫面 ---------- */
-/* 截圖排在下載按鈕「上面」是刻意的：第一次來的人在按下載之前，
-   得先看到這東西長什麼樣。文字說一百遍不如一張圖。
-   但它也不能太大 —— 大到把下載按鈕推出第一頁就本末倒置了。 */
-.shot{margin:54px auto 0; max-width:460px}
-.shot.hero{margin:18px auto 0; max-width:322px}
-.shot.hero .caption{margin-top:9px; font-size:12.5px}
-.shot img{width:100%; height:auto; display:block; border-radius:15px;
-  border:1px solid var(--border); box-shadow:var(--shadow)}
-.caption{text-align:center; color:var(--muted); font-size:13px; margin-top:14px}
-
-/* ---------- 區塊 ---------- */
-section{padding:60px 0 0}
-h2{font-size:23px; margin:0 0 24px; letter-spacing:-.01em}
-.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px}
-.card{background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:21px 22px}
-.card h3{margin:0 0 7px; font-size:15.5px}
-.card p{margin:0; color:var(--soft); font-size:14.2px; line-height:1.65}
-.num{color:var(--accent); font-weight:650; font-variant-numeric:tabular-nums}
-
-ol.steps{counter-reset:s; list-style:none; padding:0; margin:0}
-ol.steps li{
-  counter-increment:s; position:relative; padding:0 0 20px 44px; color:var(--soft); font-size:15px;
+.rowpair{display:grid; grid-template-columns:1fr 1fr; gap:26px}
+.metric .lab{font-size:13px; color:var(--muted)}
+.metric .big{
+  font-size:clamp(34px,5.4vw,46px); font-weight:800; letter-spacing:-.03em;
+  line-height:1.15; font-variant-numeric:tabular-nums;
 }
-ol.steps li::before{
-  content:counter(s); position:absolute; left:0; top:1px;
-  width:27px; height:27px; border-radius:50%; background:var(--accent-soft); color:var(--accent);
-  display:grid; place-items:center; font-size:13.5px; font-weight:650;
+.metric .unit{font-size:.44em; font-weight:600; color:var(--muted); margin-left:3px}
+.metric .how{font-size:13px; color:var(--soft); margin-top:3px; line-height:1.6}
+.metric.now .big{color:var(--accent)}
+.metric.was .big{color:var(--muted)}
+.compare .sum{
+  text-align:center; font-size:14.5px; color:var(--soft);
+  border-top:1px solid var(--border-soft); margin:22px 0 0; padding-top:18px;
 }
-ol.steps b{color:var(--text); font-weight:600}
+.compare .sum b{color:var(--text)}
+.tiny{font-size:12px; color:var(--muted); margin:8px 0 0}
 
-.note{
+/* ---------- 功能 ---------- */
+section{padding:92px 0 0}
+.eyebrow{
+  font-size:12.5px; font-weight:700; letter-spacing:.1em; color:var(--accent);
+  margin:0 0 8px;
+}
+h2{
+  font-size:clamp(25px,3.6vw,34px); margin:0 0 12px;
+  letter-spacing:-.025em; font-weight:800; line-height:1.25;
+}
+.sub2{color:var(--soft); font-size:16px; margin:0 0 30px; max-width:34em}
+.sub2 b{color:var(--text)}
+
+.feature{display:grid; grid-template-columns:1fr 1fr; gap:34px; align-items:center}
+.feature img{
+  width:100%; height:auto; display:block; border-radius:16px;
+  border:1px solid var(--border); box-shadow:var(--shadow-lg);
+}
+.feature .cap{text-align:center; color:var(--muted); font-size:12.5px; margin-top:12px}
+.bullets{margin:0; padding:0; list-style:none}
+.bullets li{
+  position:relative; padding-left:20px; margin:11px 0;
+  color:var(--soft); font-size:14.8px; line-height:1.7;
+}
+.bullets li::before{
+  content:""; position:absolute; left:0; top:11px;
+  width:6px; height:6px; border-radius:50%; background:var(--accent);
+}
+.bullets b{color:var(--text)}
+
+/* 三個檔案 → 用料號串 → 一次全部出來 */
+.join{margin:0 0 26px}
+.files{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+.file,.out{background:var(--surface); border:1px solid var(--border);
+  border-radius:13px; padding:14px 16px}
+.out{border-color:var(--accent); border-width:2px}
+.fn{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:9px}
+.out .fn{color:var(--accent); font-size:13.5px}
+.cols{display:flex; flex-wrap:wrap; gap:6px}
+.cols span{
+  font-size:12.5px; color:var(--soft); background:var(--bg);
+  border:1px solid var(--border-soft); border-radius:6px; padding:3px 9px;
+}
+.cols .key{color:var(--accent); background:var(--accent-soft);
+  border-color:transparent; font-weight:700}
+.arrow{display:flex; align-items:center; gap:12px; margin:14px 2px}
+.arrow .line{flex:1; height:1px; background:var(--border)}
+.arrow .cap{font-size:12.5px; color:var(--muted); white-space:nowrap}
+
+/* ---------- 隱私 ---------- */
+.privacy{background:var(--ink); color:var(--bg); border-radius:22px; padding:40px 36px}
+@media (prefers-color-scheme:dark){
+  .privacy{background:var(--surface); border:1px solid var(--border)}
+}
+.privacy h2{margin:0 0 8px; color:inherit}
+.privacy p{margin:0; font-size:15px; color:color-mix(in srgb, currentColor 66%, transparent)}
+.privacy p b{color:inherit}
+
+/* ---------- 安裝 ---------- */
+/* 這一段不是在賣東西，是說明書。使用者卡住的時候人已經離開網頁了，
+   所以寧可長也不要漏 —— 前面能砍的都砍了，就是為了留這一段。 */
+.gate{background:var(--surface); border:2px solid var(--accent);
+  border-radius:20px; padding:28px 28px 24px; box-shadow:var(--shadow)}
+.gate .why{
+  background:var(--accent-soft); border-radius:12px; padding:13px 17px;
+  color:var(--text); font-size:14.3px; margin:0 0 24px; line-height:1.7;
+}
+.pass{border-top:1px solid var(--border-soft); padding-top:20px; margin-top:20px}
+.pass:first-of-type{border-top:0; padding-top:0; margin-top:0}
+.pass .tag{
+  display:inline-block; font-size:11.5px; font-weight:700; letter-spacing:.06em;
+  color:var(--bg); background:var(--ink); border-radius:100px;
+  padding:3px 11px; margin-bottom:8px;
+}
+.pass h3{margin:0 0 3px; font-size:17.5px; letter-spacing:-.01em}
+.pass .said{color:var(--muted); font-size:13.5px; margin:0 0 13px;
+  border-left:2px solid var(--border); padding-left:11px}
+.pass ol{margin:0; padding-left:21px; color:var(--soft); font-size:14.3px}
+.pass li{margin:7px 0; line-height:1.7}
+.pass li b{color:var(--text)}
+.pass .hit{color:var(--accent); font-weight:700}
+.pass .after{
+  font-size:13.3px; color:var(--muted); margin:12px 0 0; line-height:1.7;
+  background:var(--bg); border-radius:10px; padding:12px 15px;
+}
+.pass .after b{color:var(--text)}
+
+.panel{margin:16px 0 0}
+.panel svg{width:100%; height:auto; display:block; border-radius:12px;
+  border:1px solid var(--border)}
+.panel figcaption{font-size:12.5px; color:var(--muted); margin-top:8px}
+.panel figcaption b{color:var(--soft)}
+.panel .pane{fill:var(--bg)}
+.panel .cell{fill:var(--surface); stroke:var(--border); stroke-width:1}
+.panel .cell.hot{stroke:var(--accent); stroke-width:2}
+.panel text{font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif}
+.panel .t-h{fill:var(--soft); font-size:14px; font-weight:700}
+.panel .t-b{fill:var(--text); font-size:14.5px}
+.panel .t-m{fill:var(--muted); font-size:13.5px}
+.panel .cta-b{fill:var(--accent)}
+.panel .t-cta{fill:#fff; font-size:14px; font-weight:600}
+
+/* ---------- 誠實說明 ---------- */
+.plain{
   background:var(--surface); border:1px solid var(--border);
-  border-left:3px solid var(--accent); border-radius:10px;
-  padding:17px 20px; color:var(--soft); font-size:14.2px; margin-top:16px;
+  border-left:3px solid var(--muted); border-radius:12px;
+  padding:19px 22px; color:var(--soft); font-size:14.2px; line-height:1.75;
 }
-.note b{color:var(--text)}
+.plain b{color:var(--text)}
+.plain ul{margin:9px 0 0; padding-left:20px}
+.plain li{margin:6px 0}
 
-/* 下載按鈕正下方的警告。放這裡是因為使用者按完下載就走了，
-   捲不到下面那段說明 —— 實測本人就這樣踩了一次。 */
-.firstrun{
-  max-width:640px; margin:22px auto 0; text-align:left;
-  background:var(--surface); border:1px solid var(--accent);
-  border-radius:12px; padding:18px 22px; font-size:14.2px; color:var(--soft);
-}
-.firstrun .hd{
-  color:var(--text); font-weight:700; font-size:15.5px;
-  display:flex; align-items:center; gap:8px; margin-bottom:4px;
-}
-.firstrun .sub{font-size:13.2px; color:var(--muted); margin-bottom:12px}
-.firstrun ol{margin:0; padding-left:20px}
-.firstrun li{margin:7px 0; line-height:1.6}
-.firstrun li b{color:var(--text)}
-.firstrun .warn{color:var(--accent); font-weight:600}
-.firstrun .os{
-  display:inline-block; font-size:11.5px; font-weight:700; letter-spacing:.04em;
-  color:var(--muted); border:1px solid var(--border); border-radius:5px;
-  padding:1px 7px; margin:14px 0 6px;
-}
-
+/* ---------- 收尾 ---------- */
+.finale{text-align:center; padding:100px 0 0}
 footer{
-  margin-top:76px; padding:28px 0 56px; border-top:1px solid var(--border-soft);
+  margin-top:80px; padding:30px 0 64px; border-top:1px solid var(--border-soft);
   text-align:center; color:var(--muted); font-size:13.5px;
 }
 footer a{color:var(--soft)}
+
+@media (max-width:700px){
+  section{padding:66px 0 0}
+  .rowpair{grid-template-columns:1fr; gap:18px}
+  .feature{grid-template-columns:1fr; gap:22px}
+  .feature.flip .shot{order:-1}
+  .files{grid-template-columns:1fr; gap:9px}
+  .privacy{padding:30px 22px}
+  .gate{padding:22px 18px}
+}
 </style>
 </head>
 <body>
 
+<div class="bar" id="bar">
+  <div class="inner">
+    <span class="brand">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <g fill="#C9A227">
+          <rect x="4" y="24.5" width="20" height="11" rx="3"/>
+          <rect x="4" y="44.5" width="20" height="11" rx="3"/>
+          <rect x="4" y="64.5" width="20" height="11" rx="3"/>
+          <rect x="76" y="24.5" width="20" height="11" rx="3"/>
+          <rect x="76" y="44.5" width="20" height="11" rx="3"/>
+          <rect x="76" y="64.5" width="20" height="11" rx="3"/>
+        </g>
+        <mask id="p"><rect width="100" height="100" fill="#fff"/>
+          <circle cx="32" cy="31" r="6.5" fill="#000"/></mask>
+        <rect x="20" y="18" width="60" height="64" rx="8" fill="#2F3336" mask="url(#p)"/>
+      </svg>
+      PN Anywhere
+    </span>
+    <a class="mini" href="#download">下載</a>
+  </div>
+</div>
+
 <div class="wrap">
 
-<header>
-  <svg class="logo" viewBox="0 0 100 100" aria-hidden="true">
-    <g fill="#C9A227">
-      <rect x="4" y="24.5" width="20" height="11" rx="3"/>
-      <rect x="4" y="44.5" width="20" height="11" rx="3"/>
-      <rect x="4" y="64.5" width="20" height="11" rx="3"/>
-      <rect x="76" y="24.5" width="20" height="11" rx="3"/>
-      <rect x="76" y="44.5" width="20" height="11" rx="3"/>
-      <rect x="76" y="64.5" width="20" height="11" rx="3"/>
-    </g>
-    <mask id="pin1"><rect width="100" height="100" fill="#fff"/>
-      <circle cx="32" cy="31" r="6.5" fill="#000"/></mask>
-    <rect x="20" y="18" width="60" height="64" rx="8" fill="#2F3336" mask="url(#pin1)"/>
-  </svg>
-
-  <h1>PN Anywhere</h1>
-  <p class="tagline">
-    在任何軟體裡按一組熱鍵，直接查料號的價格、庫存、交期。<br>
-    打字就出結果，不用切視窗、不用開 Excel。
+<!-- ===== 第一頁 ===== -->
+<div class="hero" id="download">
+  <h1>客戶問一顆料號的價<br><span class="dim">你開了三個 Excel</span></h1>
+  <p class="lede">
+    <b>複製料號、按一組快捷鍵，答案就在眼前。</b>
+    價格、庫存、交期一起出來，不用切視窗，也不用寫 VLOOKUP。
   </p>
-  <p class="tagline" style="font-size:15px; margin-top:12px">
-    <span class="kbd">Shift</span><span class="kbd">Alt</span><span class="kbd">Space</span>
-    　→　打字　→　看到答案
+
+  <div class="cta">
+    <a class="btn btn-1"
+       href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-Windows.zip">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3 5.5 10.2 4.5v7H3v-6zM11.3 4.3 21 3v8.5h-9.7V4.3zM3 12.5h7.2v7L3 18.5v-6zm8.3 0H21V21l-9.7-1.3v-7.2z"/>
+      </svg>
+      <span class="lines"><span class="top">下載 Windows 版</span>
+        <span class="sub">免安裝，解壓即用</span></span>
+    </a>
+    <a class="btn btn-2"
+       href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-macOS-AppleSilicon.zip">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M16.4 12.8c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.15-2.8.85-3.5.85-.7 0-1.85-.83-3.05-.8-1.55.02-3 .9-3.8 2.3-1.63 2.82-.42 7 1.17 9.3.78 1.12 1.7 2.38 2.9 2.34 1.17-.05 1.6-.75 3.02-.75 1.4 0 1.8.75 3.03.73 1.25-.02 2.04-1.14 2.8-2.27.88-1.3 1.25-2.56 1.27-2.63-.03-.01-2.43-.93-2.45-3.7zM14.1 5.1c.64-.78 1.07-1.86.95-2.94-.92.04-2.03.61-2.69 1.38-.59.69-1.11 1.79-.97 2.85 1.02.08 2.07-.52 2.71-1.29z"/>
+      </svg>
+      <span class="lines"><span class="top">下載 macOS 版</span>
+        <span class="sub">Apple 晶片 M1～M4</span></span>
+    </a>
+  </div>
+
+  <p class="beneath">
+    測試版免費，可以用到 <b>2026-09-11</b>　·　不用裝 Python　·
+    <span id="dl"></span><br>
+    <a class="warnlink" href="#install">⚠︎ 兩個系統第一次打開都會被擋下來 —— 先看這裡怎麼過</a>
   </p>
-  <!-- 符號一定要拼出來。⌥⇧ 這兩個字對非工程師是無意義的圖案，
-       之前只寫符號的版本，本人第一個看不懂。 -->
-  <p class="tagline" style="font-size:13px; color:var(--muted); margin-top:2px">
-    Mac 是 ⌥⇧Space，也就是 shift + option + 空白鍵
+</div>
+
+<!-- ===== 快 ===== -->
+<div class="compare">
+  <div class="rowpair">
+    <div class="metric was">
+      <div class="lab">現在的做法</div>
+      <div class="big">40<span class="unit">秒</span></div>
+      <div class="how">開 Excel → 等它跑完 → Ctrl+F → 對哪一欄是價格 → 切回信件</div>
+    </div>
+    <div class="metric now">
+      <div class="lab">用 PN Anywhere</div>
+      <div class="big">1<span class="unit">秒</span></div>
+      <div class="how">複製 →
+        按 <span class="kbd">⇧</span><span class="kbd">⌥</span><span class="kbd">Space</span>
+        → 答案已經在畫面上</div>
+    </div>
+  </div>
+  <p class="sum">一天查 20 次，一個月就是 <b>將近 5 個小時</b>。</p>
+  <p class="tiny" style="text-align:center">
+    這兩個數字是實際操作的體感。程式內部的查詢是 0.94 毫秒（15 萬筆），這個有量過。
   </p>
-</header>
-
-<div class="shot hero">
-  <img src="shot-list.png" width="420" height="328"
-       alt="查詢視窗：輸入 STM32F103 後，下面即時列出六筆相近的料號與價格、庫存">
-  <p class="caption">按下熱鍵之後長這樣　·　打字的當下就出結果，不用按 Enter</p>
 </div>
 
-<div class="downloads">
-  <a class="btn btn-win"
-     href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-Windows.zip">
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M3 5.5 10.2 4.5v7H3v-6zM11.3 4.3 21 3v8.5h-9.7V4.3zM3 12.5h7.2v7L3 18.5v-6zm8.3 0H21V21l-9.7-1.3v-7.2z"/>
-    </svg>
-    <span class="lines"><span class="top">下載 Windows 版</span>
-      <span class="sub">.zip　·　免安裝，解壓即用</span></span>
-  </a>
-
-  <a class="btn btn-mac"
-     href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-macOS-AppleSilicon.zip">
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M16.4 12.8c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.15-2.8.85-3.5.85-.7 0-1.85-.83-3.05-.8-1.55.02-3 .9-3.8 2.3-1.63 2.82-.42 7 1.17 9.3.78 1.12 1.7 2.38 2.9 2.34 1.17-.05 1.6-.75 3.02-.75 1.4 0 1.8.75 3.03.73 1.25-.02 2.04-1.14 2.8-2.27.88-1.3 1.25-2.56 1.27-2.63-.03-.01-2.43-.93-2.45-3.7zM14.1 5.1c.64-.78 1.07-1.86.95-2.94-.92.04-2.03.61-2.69 1.38-.59.69-1.11 1.79-.97 2.85 1.02.08 2.07-.52 2.71-1.29z"/>
-    </svg>
-    <span class="lines"><span class="top">下載 macOS 版</span>
-      <span class="sub">.zip　·　Apple 晶片（M1～M4）</span></span>
-  </a>
-</div>
-
-<div class="beta">
-  這是<b>測試版，免費，可以用到 2026-09-11</b>。到期後想繼續用，
-  或是用起來哪裡不順，都寄信給我：
-  <a href="mailto:karta2446624@gmail.com">karta2446624@gmail.com</a><br>
-  <span class="counter" id="dl">　</span>
-</div>
-
-<div class="firstrun">
-  <div class="hd">⚠︎　第一次打開一定會被系統擋下來</div>
-  <div class="sub">
-    這是因為程式沒有買數位簽章（Apple US$99／年、Windows US$200／年），
-    不是程式有問題。下面四步做完就不會再遇到。
-  </div>
-
-  <div class="os">macOS</div>
-  <ol>
-    <li>跳出「Apple 無法驗證⋯」時，按 <b>完成</b>
-      <span class="warn">（千萬不要按「丟到垃圾桶」）</span></li>
-    <li>打開 <b>系統設定</b> →「<b>隱私權與安全性</b>」</li>
-    <li>捲到<b>最下面</b>的「安全性」區塊 →「<b>仍要打開</b>」</li>
-    <li>再確認一次，輸入密碼或 Touch ID</li>
-  </ol>
-  <div class="sub" style="margin:10px 0 0">
-    「仍要打開」只在你剛剛試著開啟之後約一小時內出現。不見了就再雙擊一次 App。<br>
-    Sequoia 之後<b>右鍵「打開」已經沒用了</b>，只有這條路。
-  </div>
-
-  <div class="os">Windows</div>
-  <ol>
-    <li>跳出藍色的「Windows 已保護您的電腦」→ 點「<b>其他資訊</b>」→「<b>仍要執行</b>」</li>
-  </ol>
-</div>
-
-<!-- 這一段本來埋在頁面中段。但它是 macOS 上「熱鍵完全沒反應」的唯一原因，
-     而使用者遇到的時候人已經在 App 裡了，不會回來捲網頁 —— 要嘛擺在
-     按下載之前，要嘛等於沒寫。 -->
-<div class="firstrun" style="border-color:var(--border); margin-top:14px">
-  <div class="hd">🔑　macOS 還要多開一個權限，不然熱鍵不會有反應</div>
-  <div class="sub">
-    這是 macOS 的規定：任何想「在別的軟體上面攔鍵盤」的程式都要先取得授權。
-    程式第一次打開會自己跳出來引導你，照著按就好。
-  </div>
-  <ol>
-    <li>打開 App 之後會跳一個歡迎視窗 → 按第一步的「<b>去開啟</b>」</li>
-    <li>系統設定會自己打開到「<b>隱私權與安全性</b> →
-      <b>輔助使用</b>」→ 把清單裡的 <b>PN Anywhere</b> 打勾</li>
-    <li>回到 App，熱鍵就會通了（不用重開）</li>
-  </ol>
-  <div class="sub" style="margin:10px 0 0">
-    <b>一定要先把 App 拖進「應用程式」資料夾再打開。</b>
-    放在「下載項目」裡直接開的話，macOS 每次會從一個隨機的暫存路徑執行它，
-    權限打勾了也存不住 —— 這是最多人卡住的一關。
-  </div>
-</div>
-
-<p class="under">
-  macOS 版目前只支援 <b>Apple 晶片（M1～M4）</b>　·
-  Intel Mac 下載後不會有任何反應　·
-  不確定就看左上角  →「關於這台 Mac」的「晶片」那行
-</p>
-<p class="under">
-  兩個平台都不需要安裝 Python　·　<a href="https://github.com/River0420/pn-anywhere/releases">看所有版本</a>
-</p>
-
+<!-- ===== 功能一 ===== -->
 <section>
-  <h2>它解決什麼</h2>
-  <div class="grid">
-    <div class="card">
-      <h3>不用再開 Excel 找</h3>
-      <p>報價單、庫存表、供應商表分散在好幾個檔案裡。這裡用料號把它們串起來，一次看完。</p>
+  <p class="eyebrow">01</p>
+  <h2>按一下，不用切出去</h2>
+  <p class="sub2">
+    在 Outlook、Chrome、LINE、ERP 裡都能按 —— <b>它不挑軟體</b>。
+    查料號的時候你正在寫信、正在看 BOM，任何「切出去」的動作都會打斷你。
+  </p>
+  <div class="feature">
+    <div>
+      <ul class="bullets">
+        <li><b>先複製料號再按</b>，它自動填好，答案直接出來</li>
+        <li>沒複製也行，按了打字就開始找，<b>不用按 Enter</b></li>
+        <li>點別的視窗它就自己消失，游標還在你原本打字的地方</li>
+      </ul>
     </div>
-    <div class="card">
-      <h3>複製了就直接按</h3>
-      <p>在 BOM、email、任何地方把料號選起來 <span class="kbd">⌘C</span>，
-        再按熱鍵 —— 它已經幫你填好、查完了。連貼上都不用。</p>
-    </div>
-    <div class="card">
-      <h3>快到沒有等待感</h3>
-      <p>每按一個鍵重算一次，<span class="num">0.94 毫秒</span>。<span class="num">15 萬</span>筆資料跟 100 筆一樣快。</p>
-    </div>
-    <div class="card">
-      <h3>資料不離開你的電腦</h3>
-      <p>不連外網、不上傳、沒有帳號。你的成本價就只在你的硬碟裡。</p>
-    </div>
-    <div class="card">
-      <h3>髒檔案也讀得進來</h3>
-      <p>ERP 吐出來的假 .xls、Big5 編碼、前面卡兩列公司抬頭 —— 都自己認得出來。</p>
-    </div>
-    <div class="card">
-      <h3>重複料號會講</h3>
-      <p>同一個料號有階梯報價、不同批號時，畫面會標「3 筆」，<span class="kbd">←</span><span class="kbd">→</span> 換著看，不會讓你抄到錯的價。</p>
-    </div>
-    <div class="card">
-      <h3>不佔用你的畫面</h3>
-      <p>常駐在工作列／選單列，不進 Dock、不搶前景。查完 <span class="kbd">esc</span> 就消失。</p>
+    <div class="shot">
+      <img src="shot-list.png" width="420" height="328"
+           alt="查詢視窗：輸入 STM32F103 後即時列出六筆相近的料號、單價與庫存">
+      <p class="cap">打字的當下就在找</p>
     </div>
   </div>
 </section>
 
+<!-- ===== 功能二 ===== -->
 <section>
-  <h2>怎麼開始</h2>
-  <ol class="steps">
-    <li><b>下載、解壓、打開。</b>Windows 雙擊 exe；macOS 把 App 拖進「應用程式」再打開
-      —— 兩邊第一次都會被系統擋，看下面的說明。</li>
-    <li><b>匯入你的 Excel。</b>點工作列／選單列的晶片圖示 →「匯入 Excel 資料」，最多三個檔案，選好要用哪一欄當料號。</li>
-    <li><b>按 <span class="kbd">Shift</span><span class="kbd">Alt</span><span class="kbd">Space</span></b>
-      （Mac 是 <span class="kbd">⇧</span><span class="kbd">⌥</span><span class="kbd">Space</span>，
-      也就是 shift + option + 空白鍵）。打字就開始找。
-      <span class="kbd">↑↓</span> 選、<span class="kbd">Enter</span> 看完整資料、
-      <span class="kbd">esc</span> 關掉。<br>
-      <b>更快的用法：先把料號複製起來再按熱鍵</b>，它會自動填好、直接把結果查出來。
-      剪貼簿裡如果是別的東西，就會顯示查無，直接打字覆蓋掉就好。</li>
-    <li><b>不喜歡這組快捷鍵就換掉。</b>圖示 →「設定快捷鍵…」，
-      可以點現成的、也可以自己按一組。按「試按看看」會當場掛上去請你按一次
-      —— 有反應才算數，不用存檔重開才發現不能用。</li>
-  </ol>
+  <p class="eyebrow">02</p>
+  <h2>三個檔案的欄位，一起出來</h2>
+  <p class="sub2">
+    這就是 VLOOKUP 在做的事 —— 用同一個料號欄去別的檔案撈欄位。
+    差別是 <b>VLOOKUP 一條公式只撈得回一欄</b>，六欄就要寫六條。
+  </p>
 
-  <div class="note">
-    <b>被系統擋下來、還有 macOS 的權限，都在最上面下載按鈕底下寫了。</b>
-    這裡補一個只有更新過的人會遇到的狀況：
-
-    <div style="margin-top:12px">
-      <b>更新到新版之後如果熱鍵突然不動了</b>，到「隱私權與安全性 → 輔助使用」，
-      把清單裡的 PN Anywhere <b>選起來按「−」移除</b>（不是關掉開關），
-      再重開程式重新授權一次。原因是這個程式沒有付費簽章，
-      每次改版簽章都會變，舊的授權記錄會對不上。
+  <div class="join">
+    <div class="files">
+      <div class="file">
+        <div class="fn">價格表.xlsx</div>
+        <div class="cols"><span class="key">料號</span><span>單價</span><span>MOQ</span></div>
+      </div>
+      <div class="file">
+        <div class="fn">庫存與交期.xlsx</div>
+        <div class="cols"><span class="key">料號</span><span>庫存</span><span>交期</span></div>
+      </div>
+      <div class="file">
+        <div class="fn">供應商.xlsx</div>
+        <div class="cols"><span class="key">料號</span><span>原廠</span><span>產地</span></div>
+      </div>
+    </div>
+    <div class="arrow" aria-hidden="true">
+      <span class="line"></span><span class="cap">用料號串起來</span><span class="line"></span>
+    </div>
+    <div class="out">
+      <div class="fn">按一下，全部一起出現</div>
+      <div class="cols">
+        <span class="key">料號</span><span>單價</span><span>MOQ</span>
+        <span>庫存</span><span>交期</span><span>原廠</span><span>產地</span>
+      </div>
     </div>
   </div>
 
-  <div class="note" style="border-left-color:var(--muted); margin-top:14px">
-    <b>打開之後畫面上不會有任何視窗 —— 這是正常的。</b><br>
-    它是常駐工具，只會在 macOS 的<b>選單列右上角</b>／Windows 的<b>工作列右下角</b>
-    多一顆晶片圖示（Windows 可能被摺疊在 <span class="kbd">^</span> 裡面）。
-    第一次啟動會跳一個引導視窗告訴你圖示在哪，順便讓你確認快捷鍵、匯入資料。
+  <div class="feature flip">
+    <div>
+      <ul class="bullets">
+        <li>三個檔案<b>各自擺著就好</b>，不用先拼成同一張表</li>
+        <li>沒有公式，<b>檔案改名搬位置也不會 <code>#REF!</code></b></li>
+        <li>下個月拿到新價格表，按「重新載入」就好</li>
+        <li>同一顆料有階梯報價？<b>會標「6 筆」</b>，
+          <span class="kbd">↑↓</span> 換著看，不會抄到錯的價</li>
+      </ul>
+    </div>
+    <div class="shot">
+      <img src="shot-detail.png" width="420" height="420"
+           alt="詳細畫面：單價 12.50、庫存 3,200、原廠 ST、交期台灣現貨，右下角顯示第 1／6 筆">
+      <p class="cap">選一筆看完整資料</p>
+    </div>
+  </div>
+
+  <p class="tiny" style="max-width:44em">
+    順帶一提：<code>stm32f103c8t6</code>、<code>STM32-F103 C8T6</code>、
+    <code>ＳＴＭ32Ｆ103Ｃ8Ｔ6</code> 在 Excel 裡是三個不同的字串，VLOOKUP 會給你
+    <code>#N/A</code>。在這裡它們是同一顆料。Excel 把 <code>1234</code> 讀成
+    <code>1234.0</code> 的那種也一樣對得上。
+  </p>
+</section>
+
+<!-- ===== 隱私 ===== -->
+<section>
+  <div class="privacy">
+    <h2>你的價格表不會離開這台電腦</h2>
+    <p>
+      這是公司資料，所以它從一開始就<b>沒有連網的能力</b>。
+      不用註冊、沒有雲端、沒有後端，也不記錄你查了什麼。
+      你的 Excel 只是被讀進記憶體，如此而已。
+    </p>
   </div>
 </section>
 
-<section>
-  <h2>誠實說明</h2>
-  <div class="note" style="border-left-color:var(--muted)">
-    這個工具<b>只呈現你自己匯入的檔案內容</b>，不修改、不推算、不猜任何數值。
-    畫面上每一個數字都是從你的儲存格直接搬過來的。<br><br>
-    但它終究讀的是你給它的檔案 —— 報價、交期與庫存，
-    請以貴公司正式系統及供應商回覆為準。
+<!-- ===== 安裝 ===== -->
+<section id="install">
+  <h2>下載之後會遇到兩關</h2>
+  <p class="sub2">兩關都會過，但沒人先告訴你的話，第一關就會讓你以為程式壞了。</p>
+
+  <div class="gate">
+    <p class="why">
+      <b>先講結論：這不是病毒，也不是程式有問題。</b>
+      是因為我沒有買數位簽章（Apple 一年 US$99、Windows 一年 US$200）。
+      系統對沒簽章的程式一律先擋，跟程式本身無關。
+    </p>
+
+    <div class="pass">
+      <div class="tag">第一關　·　macOS</div>
+      <h3>「Apple 無法驗證此 App 是否含有惡意軟體」</h3>
+      <p class="said">跳出這個視窗，只有兩個按鈕，看起來像是只能放棄</p>
+      <ol>
+        <li>按 <b>完成</b>　<span class="hit">千萬不要按「丟到垃圾桶」</span></li>
+        <li>打開「<b>系統設定</b>」→「<b>隱私權與安全性</b>」</li>
+        <li>一路捲到<b>最下面</b>的「安全性」區塊 → 按「<b>仍要打開</b>」</li>
+        <li>再確認一次，輸入密碼或 Touch ID</li>
+      </ol>
+      <figure class="panel">
+        <svg viewBox="0 0 560 196" role="img"
+             aria-label="系統設定的安全性區塊示意：已封鎖 PN Anywhere，右邊有一顆「仍要打開」按鈕">
+          <rect x="0" y="0" width="560" height="196" rx="12" class="pane"/>
+          <text x="24" y="30" class="t-h">安全性</text>
+          <rect x="16" y="44" width="528" height="46" rx="9" class="cell"/>
+          <text x="32" y="72" class="t-b">允許以下來源的應用程式</text>
+          <text x="528" y="72" class="t-m" text-anchor="end">App Store 與已知的開發者</text>
+          <rect x="16" y="100" width="528" height="76" rx="9" class="cell hot"/>
+          <text x="32" y="130" class="t-b">已封鎖使用「PN Anywhere」，</text>
+          <text x="32" y="152" class="t-b">因為它來自未識別的開發者。</text>
+          <rect x="418" y="118" width="110" height="34" rx="8" class="cta-b"/>
+          <text x="473" y="140" class="t-cta" text-anchor="middle">仍要打開</text>
+        </svg>
+        <figcaption>捲到<b>最下面</b>才看得到。這一塊只有在你剛剛試著開啟之後才會出現。</figcaption>
+      </figure>
+      <p class="after">
+        <b>找不到「仍要打開」怎麼辦？</b>
+        它只會在你剛剛試著打開 App 之後的<b>一小時內</b>出現。超過就消失了 ——
+        回去再雙擊一次 App，被擋之後馬上回來這裡看，就會有了。<br>
+        <b>不要浪費時間試「右鍵 → 打開」。</b>那是以前的老方法，
+        <b>macOS Sequoia（15）之後已經完全沒用</b>，點了只會再跳一次同樣的警告。
+      </p>
+    </div>
+
+    <div class="pass">
+      <div class="tag">第一關　·　Windows</div>
+      <h3>藍色的「Windows 已保護您的電腦」</h3>
+      <p class="said">畫面上只有一顆「不執行」，看起來沒有別的選擇</p>
+      <ol>
+        <li>點左邊那行小字「<b>其他資訊</b>」</li>
+        <li>下面會多出一顆「<b>仍要執行</b>」→ 按下去</li>
+      </ol>
+    </div>
+
+    <div class="pass">
+      <div class="tag">第二關　·　只有 macOS</div>
+      <h3>要開「輔助使用」權限，不然快捷鍵沒反應</h3>
+      <p class="said">程式開起來了、圖示也在，但按快捷鍵什麼都沒發生</p>
+      <ol>
+        <li>把 App <b>拖進「應用程式」資料夾</b>再打開
+          <span class="hit">這一步不能跳過</span></li>
+        <li>第一次打開會跳一個歡迎視窗 → 按第一步的「<b>去開啟</b>」</li>
+        <li>系統設定會自己開到「<b>隱私權與安全性 → 輔助使用</b>」→
+          把清單裡的 <b>PN Anywhere</b> 打勾</li>
+        <li>回到 App，快捷鍵就通了，不用重開</li>
+      </ol>
+      <p class="after">
+        <b>為什麼一定要拖進「應用程式」？</b>
+        放在「下載項目」裡直接開的話，macOS 每次會從一個隨機的暫存路徑執行它，
+        權限打勾了下次開又不算數 —— <b>這是最多人卡住的一關</b>，而且完全看不出原因。<br>
+        <b>更新到新版之後突然又不動了？</b>回到「輔助使用」，把舊的那筆
+        <b>選起來按「−」移除</b>（不是關掉開關），再重新授權一次。<br>
+        <b>快捷鍵撞到別的軟體？</b>選單列圖示 →「設定快捷鍵…」可以換一組，
+        按「試按看看」會當場請你按一次，有反應才存。
+      </p>
+    </div>
   </div>
 </section>
+
+<!-- ===== 誠實說明 ===== -->
+<section>
+  <h2>先說清楚的事</h2>
+  <div class="plain">
+    這是一個人做的工具，不是公司產品。以下都是現在真實的狀況：
+    <ul>
+      <li><b>macOS 只支援 Apple 晶片（M1～M4）。</b>
+        Intel Mac 下載後完全沒反應 —— 不是壞掉，是 CPU 架構不同。
+        看左上角  →「關於這台 Mac」的「晶片」那行。</li>
+      <li><b>測試版到 2026-09-11。</b>到期後想繼續用寄信給我就好，
+        到期不會刪掉你匯入的任何資料。</li>
+      <li><b>Windows 版還沒有真人用過。</b>自動測試全部通過，
+        但我手上沒有 Windows 機器。你是第一個的話，出問題請一定要告訴我。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 收尾 ===== -->
+<div class="finale">
+  <h2>不用再開 Excel 找料號</h2>
+  <p class="lede">下載、解壓、匯入你的價格表。三分鐘。</p>
+  <div class="cta">
+    <a class="btn btn-1"
+       href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-Windows.zip">
+      <span class="lines"><span class="top">下載 Windows 版</span>
+        <span class="sub">免安裝，解壓即用</span></span>
+    </a>
+    <a class="btn btn-2"
+       href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-macOS-AppleSilicon.zip">
+      <span class="lines"><span class="top">下載 macOS 版</span>
+        <span class="sub">Apple 晶片 M1～M4</span></span>
+    </a>
+  </div>
+  <p class="beneath">
+    <a class="warnlink" href="#install">別忘了：第一次打開會被系統擋，這裡是過關的方法</a>
+  </p>
+</div>
 
 <footer>
   <a href="https://github.com/River0420/pn-anywhere/releases">所有版本</a>
-  　·　測試版免費　·　<a href="mailto:karta2446624@gmail.com">karta2446624@gmail.com</a>
+  　·　測試版免費　·
+  <a href="mailto:karta2446624@gmail.com">karta2446624@gmail.com</a>
 </footer>
 
 </div>
 
 <script>
-/* 下載次數。GitHub 的 Release API 本來就會回報每個檔案被抓幾次，
-   所以不需要後端、不需要資料庫、不需要追蹤使用者 —— 只是去問一句。
+const bar = document.getElementById("bar");
+addEventListener("scroll", () => bar.classList.toggle("stuck", scrollY > 8), {passive:true});
 
-   刻意不做的事：不寫 cookie、不記 IP、不分平台。
-   這個數字只是給我自己看「有沒有人在用」，不值得為它裝一套分析工具。
-
-   拿不到就整行不顯示。一個沒人在等的數字，不該在頁面上留下錯誤訊息。 */
+/* 下載次數直接問 GitHub 的 Release API —— 不需要後端，也不追蹤使用者。
+   拿不到就整段不顯示。 */
 fetch("https://api.github.com/repos/River0420/pn-anywhere/releases")
   .then(r => r.ok ? r.json() : Promise.reject(r.status))
-  .then(releases => {
-    const total = releases
-      .flatMap(r => r.assets || [])
-      .reduce((sum, a) => sum + (a.download_count || 0), 0);
-    if (total > 0) {
-      document.getElementById("dl").textContent =
-        `目前已經被下載 ${total.toLocaleString()} 次`;
-    }
+  .then(rs => {
+    const n = rs.flatMap(r => r.assets || []).reduce((s,a) => s + (a.download_count||0), 0);
+    if (n > 0) document.getElementById("dl").textContent = `已經被下載 ${n.toLocaleString()} 次`;
   })
   .catch(() => {});
 </script>
