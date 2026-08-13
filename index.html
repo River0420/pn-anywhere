@@ -34,8 +34,11 @@ body{
 .wrap{max-width:760px; margin:0 auto; padding:0 24px}
 
 /* ---------- hero ---------- */
-header{padding:72px 0 8px; text-align:center}
-.logo{width:72px; height:72px; margin-bottom:22px}
+/* 第一頁要塞得下四樣東西：這是什麼、長什麼樣、下載、會被系統擋。
+   所以標題區壓到最小 —— 每多一行說明，下載按鈕就往下掉一行。
+   細節不是不寫，是搬到下面去寫。 */
+header{padding:34px 0 4px; text-align:center}
+.logo{width:60px; height:60px; margin-bottom:16px}
 h1{font-size:clamp(34px,6vw,46px); line-height:1.2; margin:0 0 14px; letter-spacing:-.02em}
 .tagline{font-size:clamp(17px,2.5vw,20px); color:var(--soft); margin:0 auto 6px; max-width:30em}
 .kbd{
@@ -46,7 +49,7 @@ h1{font-size:clamp(34px,6vw,46px); line-height:1.2; margin:0 0 14px; letter-spac
 }
 
 /* ---------- 下載按鈕 ---------- */
-.downloads{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:38px 0 12px}
+.downloads{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:26px 0 12px}
 .btn{
   display:flex; align-items:center; gap:13px; text-decoration:none;
   padding:17px 30px; border-radius:13px; min-width:236px;
@@ -65,8 +68,24 @@ h1{font-size:clamp(34px,6vw,46px); line-height:1.2; margin:0 0 14px; letter-spac
 .under{text-align:center; color:var(--muted); font-size:13.5px; margin:0 0 4px}
 .under a{color:var(--soft)}
 
+/* 測試期。用中性的灰、不用警告色 —— 這不是壞消息，
+   但一定要在按下載之前就看得到，不然到期那天感覺是被騙。 */
+.beta{
+  max-width:640px; margin:16px auto 0; text-align:center;
+  font-size:13.5px; color:var(--soft);
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:11px 18px;
+}
+.beta b{color:var(--text)}
+.counter{font-variant-numeric:tabular-nums; color:var(--soft)}
+
 /* ---------- 畫面 ---------- */
+/* 截圖排在下載按鈕「上面」是刻意的：第一次來的人在按下載之前，
+   得先看到這東西長什麼樣。文字說一百遍不如一張圖。
+   但它也不能太大 —— 大到把下載按鈕推出第一頁就本末倒置了。 */
 .shot{margin:54px auto 0; max-width:460px}
+.shot.hero{margin:18px auto 0; max-width:322px}
+.shot.hero .caption{margin-top:9px; font-size:12.5px}
 .shot img{width:100%; height:auto; display:block; border-radius:15px;
   border:1px solid var(--border); box-shadow:var(--shadow)}
 .caption{text-align:center; color:var(--muted); font-size:13px; margin-top:14px}
@@ -151,16 +170,22 @@ footer a{color:var(--soft)}
     在任何軟體裡按一組熱鍵，直接查料號的價格、庫存、交期。<br>
     打字就出結果，不用切視窗、不用開 Excel。
   </p>
-  <p class="tagline" style="font-size:15px">
+  <p class="tagline" style="font-size:15px; margin-top:12px">
     <span class="kbd">Shift</span><span class="kbd">Alt</span><span class="kbd">Space</span>
     　→　打字　→　看到答案
   </p>
-  <p class="tagline" style="font-size:13.5px; color:var(--muted)">
-    Mac 上是 <span class="kbd">⌥</span><span class="kbd">⇧</span><span class="kbd">Space</span>
-    （option + shift + 空白鍵）—— 同樣三顆鍵，⌥ 就是 Alt<br>
-    撞到別的軟體？程式裡可以自己換一組，而且會當場讓你按按看能不能用。
+  <!-- 符號一定要拼出來。⌥⇧ 這兩個字對非工程師是無意義的圖案，
+       之前只寫符號的版本，本人第一個看不懂。 -->
+  <p class="tagline" style="font-size:13px; color:var(--muted); margin-top:2px">
+    Mac 是 ⌥⇧Space，也就是 shift + option + 空白鍵
   </p>
 </header>
+
+<div class="shot hero">
+  <img src="shot-list.png" width="420" height="328"
+       alt="查詢視窗：輸入 STM32F103 後，下面即時列出六筆相近的料號與價格、庫存">
+  <p class="caption">按下熱鍵之後長這樣　·　打字的當下就出結果，不用按 Enter</p>
+</div>
 
 <div class="downloads">
   <a class="btn btn-win"
@@ -180,6 +205,13 @@ footer a{color:var(--soft)}
     <span class="lines"><span class="top">下載 macOS 版</span>
       <span class="sub">.zip　·　Apple 晶片（M1～M4）</span></span>
   </a>
+</div>
+
+<div class="beta">
+  這是<b>測試版，免費，可以用到 2026-09-11</b>。到期後想繼續用，
+  或是用起來哪裡不順，都寄信給我：
+  <a href="mailto:karta2446624@gmail.com">karta2446624@gmail.com</a><br>
+  <span class="counter" id="dl">　</span>
 </div>
 
 <div class="firstrun">
@@ -208,6 +240,28 @@ footer a{color:var(--soft)}
   </ol>
 </div>
 
+<!-- 這一段本來埋在頁面中段。但它是 macOS 上「熱鍵完全沒反應」的唯一原因，
+     而使用者遇到的時候人已經在 App 裡了，不會回來捲網頁 —— 要嘛擺在
+     按下載之前，要嘛等於沒寫。 -->
+<div class="firstrun" style="border-color:var(--border); margin-top:14px">
+  <div class="hd">🔑　macOS 還要多開一個權限，不然熱鍵不會有反應</div>
+  <div class="sub">
+    這是 macOS 的規定：任何想「在別的軟體上面攔鍵盤」的程式都要先取得授權。
+    程式第一次打開會自己跳出來引導你，照著按就好。
+  </div>
+  <ol>
+    <li>打開 App 之後會跳一個歡迎視窗 → 按第一步的「<b>去開啟</b>」</li>
+    <li>系統設定會自己打開到「<b>隱私權與安全性</b> →
+      <b>輔助使用</b>」→ 把清單裡的 <b>PN Anywhere</b> 打勾</li>
+    <li>回到 App，熱鍵就會通了（不用重開）</li>
+  </ol>
+  <div class="sub" style="margin:10px 0 0">
+    <b>一定要先把 App 拖進「應用程式」資料夾再打開。</b>
+    放在「下載項目」裡直接開的話，macOS 每次會從一個隨機的暫存路徑執行它，
+    權限打勾了也存不住 —— 這是最多人卡住的一關。
+  </div>
+</div>
+
 <p class="under">
   macOS 版目前只支援 <b>Apple 晶片（M1～M4）</b>　·
   Intel Mac 下載後不會有任何反應　·
@@ -216,12 +270,6 @@ footer a{color:var(--soft)}
 <p class="under">
   兩個平台都不需要安裝 Python　·　<a href="https://github.com/River0420/pn-anywhere/releases">看所有版本</a>
 </p>
-
-<div class="shot">
-  <img src="shot-list.png" width="420" height="328"
-       alt="查詢視窗：輸入 STM32F103 後，下面即時列出六筆相近的料號與價格、庫存">
-  <p class="caption">打字的當下就出結果，不用按 Enter</p>
-</div>
 
 <section>
   <h2>它解決什麼</h2>
@@ -277,13 +325,10 @@ footer a{color:var(--soft)}
   </ol>
 
   <div class="note">
-    <b>第一次開會被系統擋下來 —— 上面下載按鈕底下那四步就是在講這個。</b>
-    macOS 走「系統設定 →隱私權與安全性 → 最下面的『仍要打開』」，
-    Windows 是「其他資訊 → 仍要執行」。
+    <b>被系統擋下來、還有 macOS 的權限，都在最上面下載按鈕底下寫了。</b>
+    這裡補一個只有更新過的人會遇到的狀況：
 
     <div style="margin-top:12px">
-      <b>macOS 還要多開一個權限</b>：全域熱鍵需要「輔助使用」。
-      程式第一次啟動時會自己跳出來引導你，跟著按就好。<br>
       <b>更新到新版之後如果熱鍵突然不動了</b>，到「隱私權與安全性 → 輔助使用」，
       把清單裡的 PN Anywhere <b>選起來按「−」移除</b>（不是關掉開關），
       再重開程式重新授權一次。原因是這個程式沒有付費簽章，
@@ -311,9 +356,31 @@ footer a{color:var(--soft)}
 
 <footer>
   <a href="https://github.com/River0420/pn-anywhere/releases">所有版本</a>
-  　·　免費使用
+  　·　測試版免費　·　<a href="mailto:karta2446624@gmail.com">karta2446624@gmail.com</a>
 </footer>
 
 </div>
+
+<script>
+/* 下載次數。GitHub 的 Release API 本來就會回報每個檔案被抓幾次，
+   所以不需要後端、不需要資料庫、不需要追蹤使用者 —— 只是去問一句。
+
+   刻意不做的事：不寫 cookie、不記 IP、不分平台。
+   這個數字只是給我自己看「有沒有人在用」，不值得為它裝一套分析工具。
+
+   拿不到就整行不顯示。一個沒人在等的數字，不該在頁面上留下錯誤訊息。 */
+fetch("https://api.github.com/repos/River0420/pn-anywhere/releases")
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(releases => {
+    const total = releases
+      .flatMap(r => r.assets || [])
+      .reduce((sum, a) => sum + (a.download_count || 0), 0);
+    if (total > 0) {
+      document.getElementById("dl").textContent =
+        `目前已經被下載 ${total.toLocaleString()} 次`;
+    }
+  })
+  .catch(() => {});
+</script>
 </body>
 </html>
