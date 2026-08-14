@@ -168,6 +168,18 @@ h2{
 .arrow .line{flex:1; height:1px; background:var(--border)}
 .arrow .cap{font-size:12.5px; color:var(--muted); white-space:nowrap}
 
+/* ---------- 不只料號 ---------- */
+/* 刻意做得比前兩個功能區塊安靜 —— 它是給「我不是採購，那我能用嗎」
+   的人一個台階，不是主打。搶了戲反而會稀釋掉前面的定位。 */
+.uses{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:22px 0 18px}
+.use{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  padding:13px 17px; font-size:14.3px; display:flex; flex-wrap:wrap;
+  align-items:baseline; gap:2px;
+}
+.use b{color:var(--text); font-weight:700}
+.use span{color:var(--soft)}
+
 /* ---------- 隱私 ---------- */
 .privacy{background:var(--ink); color:var(--bg); border-radius:22px; padding:40px 36px}
 @media (prefers-color-scheme:dark){
@@ -245,6 +257,7 @@ footer a{color:var(--soft)}
   .feature{grid-template-columns:1fr; gap:22px}
   .feature.flip .shot{order:-1}
   .files{grid-template-columns:1fr; gap:9px}
+  .uses{grid-template-columns:1fr; gap:8px}
   .privacy{padding:30px 22px}
   .gate{padding:22px 18px}
 }
@@ -414,6 +427,30 @@ footer a{color:var(--soft)}
     <code>ＳＴＭ32Ｆ103Ｃ8Ｔ6</code> 在 Excel 裡是三個不同的字串，VLOOKUP 會給你
     <code>#N/A</code>。在這裡它們是同一顆料。Excel 把 <code>1234</code> 讀成
     <code>1234.0</code> 的那種也一樣對得上。
+  </p>
+</section>
+
+<!-- ===== 不只料號 ===== -->
+<!-- 標題和第一頁刻意維持「料號」，寬的定位不會擴大客群，
+     只會讓所有人都不覺得跟自己有關。這一段放在讀者已經懂它在幹嘛
+     之後，讓非電子業的人自己對號入座 —— 靠具體的例子，不是靠
+     「任何產業都適用」那種話。 -->
+<section>
+  <h2>其實它不認識「料號」</h2>
+  <p class="sub2">
+    它只做一件事：<b>你給一個代號，它把那一列的其他欄位吐出來。</b>
+    那個代號叫什麼，它沒有意見。
+  </p>
+  <div class="uses">
+    <div class="use"><b>員工工號</b><span>→　姓名、分機、部門</span></div>
+    <div class="use"><b>商品 SKU</b><span>→　售價、庫存、條碼</span></div>
+    <div class="use"><b>客戶代號</b><span>→　聯絡人、付款條件</span></div>
+    <div class="use"><b>訂單編號</b><span>→　出貨日、追蹤號碼</span></div>
+  </div>
+  <p class="tiny" style="max-width:44em">
+    判斷標準很簡單：<b>你手上有一張 Excel，而且你會反覆查同一欄</b> ——
+    那它就有用。做這個工具是因為我自己在查料號，所以整頁都在講料號，
+    但程式裡沒有任何一行是為電子零件寫的。
   </p>
 </section>
 
