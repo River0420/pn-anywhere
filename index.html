@@ -168,6 +168,28 @@ h2{
 .arrow .line{flex:1; height:1px; background:var(--border)}
 .arrow .cap{font-size:12.5px; color:var(--muted); white-space:nowrap}
 
+/* ---------- 下載後要先解壓縮 ---------- */
+/* 唯一攔得到使用者的位置，所以刻意做得比周圍吵：實心邊框、accent 底色。
+   但仍然壓在下載按鈕「下面」—— 擋在上面會讓人先讀說明才敢下載。 */
+.unzip{
+  max-width:640px; margin:26px auto 0; text-align:left;
+  border:2px solid var(--accent); border-radius:16px; overflow:hidden;
+  background:var(--surface); box-shadow:var(--shadow);
+}
+.unzip .head{
+  background:var(--accent); color:#fff; padding:11px 18px;
+  font-size:15.5px; font-weight:600; letter-spacing:-.01em;
+}
+.unzip .head b{font-weight:800}
+.unzip .two{display:grid; grid-template-columns:1fr 1fr}
+.unzip .bad,.unzip .good{padding:15px 18px 17px}
+.unzip .bad{border-right:1px solid var(--border)}
+.unzip .mark{font-size:14px; font-weight:700; margin-bottom:5px}
+.unzip .bad .mark{color:var(--muted)}
+.unzip .good .mark{color:var(--accent)}
+.unzip p{margin:0; font-size:13.4px; line-height:1.72; color:var(--soft)}
+.unzip p b{color:var(--text)}
+
 /* ---------- 不只料號 ---------- */
 /* 刻意做得比前兩個功能區塊安靜 —— 它是給「我不是採購，那我能用嗎」
    的人一個台階，不是主打。搶了戲反而會稀釋掉前面的定位。 */
@@ -258,6 +280,8 @@ footer a{color:var(--soft)}
   .feature.flip .shot{order:-1}
   .files{grid-template-columns:1fr; gap:9px}
   .uses{grid-template-columns:1fr; gap:8px}
+  .unzip .two{grid-template-columns:1fr}
+  .unzip .bad{border-right:0; border-bottom:1px solid var(--border)}
   .privacy{padding:30px 22px}
   .gate{padding:22px 18px}
 }
@@ -314,6 +338,28 @@ footer a{color:var(--soft)}
       <span class="lines"><span class="top">下載 macOS 版</span>
         <span class="sub">Apple 晶片 M1～M4</span></span>
     </a>
+  </div>
+
+  <!-- 這一塊刻意擋在下載按鈕正下方，而且做得比周圍都吵。
+       實際發生了：使用者下載完直接雙擊 zip，檔案總管把壓縮檔假裝成
+       資料夾，他點了裡面的 exe —— 看起來一模一樣，但程式需要的檔案
+       沒有一起出來，必定失敗。程式裡有偵測會跳提示，但那已經是失敗
+       之後了。唯一攔得到他的位置，是他按下載的那一秒。 -->
+  <div class="unzip">
+    <div class="head">⚠︎　下載完的是壓縮檔，<b>先解壓縮再打開</b></div>
+    <div class="two">
+      <div class="bad">
+        <div class="mark">✗　直接在壓縮檔裡點</div>
+        <p>壓縮檔<b>看起來就像資料夾</b>，點得進去、也看得到程式 ——
+          但點下去一定失敗，而且不會告訴你為什麼。</p>
+      </div>
+      <div class="good">
+        <div class="mark">✓　先解壓縮</div>
+        <p><b>Windows</b>：對著 zip 按<b>右鍵</b> →「<b>解壓縮全部</b>」，
+          進到解壓出來的資料夾再點。<br>
+          <b>Mac</b>：<b>雙擊 zip</b> 解開，再把 App <b>拖進「應用程式」</b>。</p>
+      </div>
+    </div>
   </div>
 
   <p class="beneath">
