@@ -62,6 +62,14 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size
   padding:8px 18px; border-radius:100px; font-size:14px; font-weight:600;
 }
 .bar .mini:hover{opacity:.85}
+.bar .navs{display:flex; align-items:center; gap:18px}
+/* 「下載前必看」故意不做成按鈕 —— 兩顆一樣重的按鈕會讓人不知道該按哪個。
+   它是給「已經決定要裝、但還沒下載」的人看的捷徑。 */
+.bar .link{
+  color:var(--soft); text-decoration:none; font-size:13.5px; font-weight:600;
+  white-space:nowrap;
+}
+.bar .link:hover{color:var(--accent)}
 
 /* ---------- 第一頁 ---------- */
 .hero{padding:70px 0 0; text-align:center}
@@ -95,6 +103,29 @@ h1 .dim{color:var(--muted)}
   color:var(--accent); text-decoration:none; font-weight:600;
   border-bottom:1px solid color-mix(in srgb, var(--accent) 40%, transparent);
 }
+
+/* ---------- 第一頁的 demo ---------- */
+/* 第一頁不放下載按鈕，改放這張圖。使用者要先看懂這是什麼，
+   才有辦法判斷自己要不要裝。 */
+.demo{margin:38px auto 0; max-width:470px}
+.demo img{
+  width:100%; height:auto; display:block; border-radius:16px;
+  border:1px solid var(--border); box-shadow:var(--shadow-lg);
+}
+.demo figcaption{
+  margin-top:14px; color:var(--muted); font-size:13px; line-height:1.8;
+}
+
+/* ---------- 下載區塊（搬到頁面下方） ---------- */
+.getit{
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:22px; padding:34px 30px 26px; text-align:center;
+  box-shadow:var(--shadow);
+}
+.getit h2{margin-bottom:8px}
+.getit .sub2{margin-left:auto; margin-right:auto; max-width:30em}
+.getit .cta{margin-top:0}
+.getit .beneath{margin-top:20px}
 
 /* ---------- 速度 ---------- */
 .compare{
@@ -307,66 +338,35 @@ footer a{color:var(--soft)}
       </svg>
       PN Anywhere
     </span>
-    <a class="mini" href="#download">下載</a>
+    <span class="navs">
+      <a class="link" href="#install">下載前必看</a>
+      <a class="mini" href="#download">下載</a>
+    </span>
   </div>
 </div>
 
 <div class="wrap">
 
-<!-- ===== 第一頁 ===== -->
-<div class="hero" id="download">
+<!-- ===== 第一頁 =====
+     這裡刻意不放下載按鈕。按鈕擺在第一頁的代價是：使用者還不知道
+     這是什麼就先被要求做決定，而下載完立刻會撞上解壓縮和系統封鎖
+     兩道關卡 —— 他在還沒看到demo之前就先遇到麻煩，然後放棄。
+     所以第一頁只做一件事：讓他認出自己的痛點，然後看到畫面。
+     要下載的人右上角一直都有一顆按鈕。 -->
+<div class="hero">
   <h1>客戶問一顆料號的價<br><span class="dim">你開了三個 Excel</span></h1>
   <p class="lede">
     <b>複製料號、按一組快捷鍵，答案就在眼前。</b>
     價格、庫存、交期一起出來，不用切視窗，也不用寫 VLOOKUP。
   </p>
 
-  <div class="cta">
-    <a class="btn btn-1"
-       href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-Windows.zip">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M3 5.5 10.2 4.5v7H3v-6zM11.3 4.3 21 3v8.5h-9.7V4.3zM3 12.5h7.2v7L3 18.5v-6zm8.3 0H21V21l-9.7-1.3v-7.2z"/>
-      </svg>
-      <span class="lines"><span class="top">下載 Windows 版</span>
-        <span class="sub">解壓縮後就能用，不用安裝</span></span>
-    </a>
-    <a class="btn btn-2"
-       href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-macOS-AppleSilicon.zip">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M16.4 12.8c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.15-2.8.85-3.5.85-.7 0-1.85-.83-3.05-.8-1.55.02-3 .9-3.8 2.3-1.63 2.82-.42 7 1.17 9.3.78 1.12 1.7 2.38 2.9 2.34 1.17-.05 1.6-.75 3.02-.75 1.4 0 1.8.75 3.03.73 1.25-.02 2.04-1.14 2.8-2.27.88-1.3 1.25-2.56 1.27-2.63-.03-.01-2.43-.93-2.45-3.7zM14.1 5.1c.64-.78 1.07-1.86.95-2.94-.92.04-2.03.61-2.69 1.38-.59.69-1.11 1.79-.97 2.85 1.02.08 2.07-.52 2.71-1.29z"/>
-      </svg>
-      <span class="lines"><span class="top">下載 macOS 版</span>
-        <span class="sub">Apple 晶片 M1～M4</span></span>
-    </a>
-  </div>
-
-  <!-- 這一塊刻意擋在下載按鈕正下方，而且做得比周圍都吵。
-       實際發生了：使用者下載完直接雙擊 zip，檔案總管把壓縮檔假裝成
-       資料夾，他點了裡面的 exe —— 看起來一模一樣，但程式需要的檔案
-       沒有一起出來，必定失敗。程式裡有偵測會跳提示，但那已經是失敗
-       之後了。唯一攔得到他的位置，是他按下載的那一秒。 -->
-  <div class="unzip">
-    <div class="head">⚠︎　下載完的是壓縮檔，<b>先解壓縮再打開</b></div>
-    <div class="two">
-      <div class="bad">
-        <div class="mark">✗　直接在壓縮檔裡點</div>
-        <p>壓縮檔<b>看起來就像資料夾</b>，點得進去、也看得到程式 ——
-          但點下去一定失敗，而且不會告訴你為什麼。</p>
-      </div>
-      <div class="good">
-        <div class="mark">✓　先解壓縮</div>
-        <p><b>Windows</b>：對著 zip 按<b>右鍵</b> →「<b>解壓縮全部</b>」，
-          進到解壓出來的資料夾再點。<br>
-          <b>Mac</b>：<b>雙擊 zip</b> 解開，再把 App <b>拖進「應用程式」</b>。</p>
-      </div>
-    </div>
-  </div>
-
-  <p class="beneath">
-    測試版免費，可以用到 <b>2026-09-12</b>　·　不用裝 Python　·
-    <span id="dl"></span><br>
-    <a class="warnlink" href="#install">⚠︎ 兩個系統第一次打開都會被擋下來 —— 先看這裡怎麼過</a>
-  </p>
+  <figure class="demo">
+    <img src="shot-list.png" width="420" height="328"
+         alt="查詢視窗：輸入 STM32F103 後即時列出六筆相近的料號、單價與庫存">
+    <figcaption>在任何軟體裡按
+      <span class="kbd">⇧</span><span class="kbd">⌥</span><span class="kbd">Space</span>
+      —— 打字的當下就在找</figcaption>
+  </figure>
 </div>
 
 <!-- ===== 快 ===== -->
@@ -399,20 +399,13 @@ footer a{color:var(--soft)}
     在 Outlook、Chrome、LINE、ERP 裡都能按 —— <b>它不挑軟體</b>。
     查料號的時候你正在寫信、正在看 BOM，任何「切出去」的動作都會打斷你。
   </p>
-  <div class="feature">
-    <div>
-      <ul class="bullets">
-        <li><b>先複製料號再按</b>，它自動填好，答案直接出來</li>
-        <li>沒複製也行，按了打字就開始找，<b>不用按 Enter</b></li>
-        <li>點別的視窗它就自己消失，游標還在你原本打字的地方</li>
-      </ul>
-    </div>
-    <div class="shot">
-      <img src="shot-list.png" width="420" height="328"
-           alt="查詢視窗：輸入 STM32F103 後即時列出六筆相近的料號、單價與庫存">
-      <p class="cap">打字的當下就在找</p>
-    </div>
-  </div>
+  <!-- 這裡原本也放 shot-list.png，但那張圖現在在第一頁 ——
+       同一張圖隔兩個畫面再出現一次，只是佔位置。 -->
+  <ul class="bullets">
+    <li><b>先複製料號再按</b>，它自動填好，答案直接出來</li>
+    <li>沒複製也行，按了打字就開始找，<b>不用按 Enter</b></li>
+    <li>點別的視窗它就自己消失，游標還在你原本打字的地方</li>
+  </ul>
 </section>
 
 <!-- ===== 功能二 ===== -->
@@ -508,6 +501,66 @@ footer a{color:var(--soft)}
       這是公司資料，所以它從一開始就<b>沒有連網的能力</b>。
       不用註冊、沒有雲端、沒有後端，也不記錄你查了什麼。
       你的 Excel 只是被讀進記憶體，如此而已。
+    </p>
+  </div>
+</section>
+
+<!-- ===== 下載 =====
+     從第一頁搬到這裡。看完前面才會到這，所以按下去的人已經知道
+     自己在下載什麼。下一段緊接著就是「會遇到兩關」—— 順序是刻意的，
+     他不必自己去找說明。 -->
+<section id="download">
+  <div class="getit">
+    <h2>下載</h2>
+    <p class="sub2" style="margin-bottom:24px">
+      免安裝，解壓縮就能用。<b>資料留在你自己的電腦。</b>
+    </p>
+
+    <div class="cta">
+      <a class="btn btn-1"
+         href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-Windows.zip">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 5.5 10.2 4.5v7H3v-6zM11.3 4.3 21 3v8.5h-9.7V4.3zM3 12.5h7.2v7L3 18.5v-6zm8.3 0H21V21l-9.7-1.3v-7.2z"/>
+        </svg>
+        <span class="lines"><span class="top">下載 Windows 版</span>
+          <span class="sub">解壓縮後就能用，不用安裝</span></span>
+      </a>
+      <a class="btn btn-2"
+         href="https://github.com/River0420/pn-anywhere/releases/latest/download/PN-Anywhere-macOS-AppleSilicon.zip">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M16.4 12.8c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.15-2.8.85-3.5.85-.7 0-1.85-.83-3.05-.8-1.55.02-3 .9-3.8 2.3-1.63 2.82-.42 7 1.17 9.3.78 1.12 1.7 2.38 2.9 2.34 1.17-.05 1.6-.75 3.02-.75 1.4 0 1.8.75 3.03.73 1.25-.02 2.04-1.14 2.8-2.27.88-1.3 1.25-2.56 1.27-2.63-.03-.01-2.43-.93-2.45-3.7zM14.1 5.1c.64-.78 1.07-1.86.95-2.94-.92.04-2.03.61-2.69 1.38-.59.69-1.11 1.79-.97 2.85 1.02.08 2.07-.52 2.71-1.29z"/>
+        </svg>
+        <span class="lines"><span class="top">下載 macOS 版</span>
+          <span class="sub">Apple 晶片 M1～M4</span></span>
+      </a>
+    </div>
+
+    <!-- 擋在下載按鈕正下方，而且做得比周圍都吵。
+         實際發生了：使用者下載完直接雙擊 zip，檔案總管把壓縮檔假裝成
+         資料夾，他點了裡面的 exe —— 看起來一模一樣，但程式需要的檔案
+         沒有一起出來，必定失敗。程式裡有偵測會跳提示，但那已經是失敗
+         之後了。唯一攔得到他的位置，是他按下載的那一秒。 -->
+    <div class="unzip">
+      <div class="head">⚠︎　下載完的是壓縮檔，<b>先解壓縮再打開</b></div>
+      <div class="two">
+        <div class="bad">
+          <div class="mark">✗　直接在壓縮檔裡點</div>
+          <p>壓縮檔<b>看起來就像資料夾</b>，點得進去、也看得到程式 ——
+            但點下去一定失敗，而且不會告訴你為什麼。</p>
+        </div>
+        <div class="good">
+          <div class="mark">✓　先解壓縮</div>
+          <p><b>Windows</b>：對著 zip 按<b>右鍵</b> →「<b>解壓縮全部</b>」，
+            進到解壓出來的資料夾再點。<br>
+            <b>Mac</b>：<b>雙擊 zip</b> 解開，再把 App <b>拖進「應用程式」</b>。</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="beneath">
+      <!-- 下載次數是 JS 補上去的，分隔符號要跟著它一起補 ——
+           不然拿不到數字的時候，句尾會掛一個孤零零的「·」。 -->
+      測試版免費，可以用到 <b>2026-09-12</b>　·　不用裝 Python<span id="dl"></span>
     </p>
   </div>
 </section>
@@ -679,7 +732,8 @@ fetch("https://api.github.com/repos/River0420/pn-anywhere/releases")
   .then(r => r.ok ? r.json() : Promise.reject(r.status))
   .then(rs => {
     const n = rs.flatMap(r => r.assets || []).reduce((s,a) => s + (a.download_count||0), 0);
-    if (n > 0) document.getElementById("dl").textContent = `已經被下載 ${n.toLocaleString()} 次`;
+    if (n > 0) document.getElementById("dl").textContent =
+      `　·　已經被下載 ${n.toLocaleString()} 次`;
   })
   .catch(() => {});
 </script>
