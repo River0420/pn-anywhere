@@ -221,6 +221,25 @@ h2{
 .unzip p{margin:0; font-size:13.4px; line-height:1.72; color:var(--soft)}
 .unzip p b{color:var(--text)}
 
+/* ---------- 要回饋 ---------- */
+/* 做得比周圍安靜一點。這不是在賣東西，是在要一個人情 ——
+   喊得越大聲越像在推銷，反而沒人填。 */
+.ask{
+  margin-top:26px; padding:24px 26px; text-align:center;
+  background:var(--surface); border:1px solid var(--border); border-radius:16px;
+}
+.ask h3{margin:0 0 6px; font-size:18px; letter-spacing:-.015em}
+.ask p{margin:0; color:var(--soft); font-size:14.2px; line-height:1.75}
+.ask p b{color:var(--text)}
+.askbtn{
+  display:inline-block; margin:16px 0 0; padding:11px 26px; border-radius:100px;
+  background:var(--accent); color:#fff; text-decoration:none;
+  font-weight:600; font-size:14.5px;
+}
+.askbtn:hover{opacity:.88}
+.ask .or{margin-top:12px; font-size:13px; color:var(--muted)}
+.ask .or a{color:var(--soft)}
+
 /* ---------- 不只料號 ---------- */
 /* 刻意做得比前兩個功能區塊安靜 —— 它是給「我不是採購，那我能用嗎」
    的人一個台階，不是主打。搶了戲反而會稀釋掉前面的定位。 */
@@ -620,7 +639,10 @@ footer a{color:var(--soft)}
           <span style="color:var(--muted); font-size:13.3px">
             Windows 會把壓縮檔假裝成資料夾，讓你點得下去 ——
             但程式需要的檔案沒有一起出來，一定失敗，而且不會告訴你原因。</span></li>
-        <li>進到解壓出來的「PN Anywhere」資料夾 → 點 <b>PN Anywhere.exe</b></li>
+        <li>進到解壓出來的資料夾 → 點 <b>PN Anywhere.exe</b>
+          <span style="color:var(--muted); font-size:13.3px">
+            （資料夾叫「PN Anywhere（請先解壓縮）」—— 名字是提醒用的，
+            解壓好之後可以自己改掉）</span></li>
         <li>跳出藍色的「Windows 已保護您的電腦」→ 點左邊那行小字
           「<b>其他資訊</b>」→ 下面會多出「<b>仍要執行</b>」→ 按下去</li>
       </ol>
@@ -691,6 +713,20 @@ footer a{color:var(--soft)}
         但我手上沒有 Windows 機器。你是第一個的話，出問題請一定要告訴我。</li>
     </ul>
   </div>
+
+  <!-- 表單的存在是為了撈「有意見但不會寫信」的人。
+       會寫信的人本來就會寫，門檻擋掉的正好是最該聽到的那一群 ——
+       裝不起來、裝了沒在用的人，不會為了抱怨去開一封信。
+       所以第一句話刻意先講「沒在用也想知道」。 -->
+  <div class="ask">
+    <h3>用了有想法？兩分鐘告訴我</h3>
+    <p>好用、難用、裝不起來、<b>裝了根本沒在用</b> —— 哪一種都想知道。
+      尤其是最後一種，那對我最有用。不用留名字。</p>
+    <a class="askbtn" href="https://docs.google.com/forms/d/e/1FAIpQLSf24zg-uUGDswa9vtYBAAkRa-bf2yE0kOxzgSiX0mKT47eD_Q/viewform"
+       target="_blank" rel="noopener">填回饋表單</a>
+    <p class="or">或直接寄信給我
+      <a href="mailto:karta2446624@gmail.com">karta2446624@gmail.com</a></p>
+  </div>
 </section>
 
 <!-- ===== 收尾 ===== -->
@@ -716,6 +752,9 @@ footer a{color:var(--soft)}
 
 <footer>
   <a href="https://github.com/River0420/pn-anywhere/releases">所有版本</a>
+  　·
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSf24zg-uUGDswa9vtYBAAkRa-bf2yE0kOxzgSiX0mKT47eD_Q/viewform"
+     target="_blank" rel="noopener">回饋表單</a>
   　·　測試版免費　·
   <a href="mailto:karta2446624@gmail.com">karta2446624@gmail.com</a>
 </footer>
