@@ -213,13 +213,21 @@ h2{
 }
 .unzip .head b{font-weight:800}
 .unzip .two{display:grid; grid-template-columns:1fr 1fr}
-.unzip .bad,.unzip .good{padding:15px 18px 17px}
-.unzip .bad{border-right:1px solid var(--border)}
-.unzip .mark{font-size:14px; font-weight:700; margin-bottom:5px}
-.unzip .bad .mark{color:var(--muted)}
-.unzip .good .mark{color:var(--accent)}
+.unzip .win,.unzip .mac{padding:15px 18px 17px}
+.unzip .win{border-right:1px solid var(--border)}
+/* 系統名只是路標，做小、做灰 —— 讀者是來找「那我要做什麼」的，
+   真正該最大的是下面那行動作。 */
+.unzip .mark{
+  font-size:12.5px; font-weight:700; color:var(--muted);
+  letter-spacing:.04em; margin-bottom:6px;
+}
+/* 每一欄只有一個動作。它要一眼看得到，不可以縮成句子裡的一個子句 ——
+   Mac 的「拖進應用程式」以前就是這樣被藏掉的。 */
+.unzip .step{font-size:14.6px; line-height:1.55; font-weight:600; color:var(--text); margin-bottom:7px}
+.unzip .step b{color:var(--accent); font-weight:800}
 .unzip p{margin:0; font-size:13.4px; line-height:1.72; color:var(--soft)}
 .unzip p b{color:var(--text)}
+.unzip .no{color:var(--muted); font-weight:600}
 
 /* ---------- 要回饋 ---------- */
 /* 做得比周圍安靜一點。這不是在賣東西，是在要一個人情 ——
@@ -331,7 +339,7 @@ footer a{color:var(--soft)}
   .files{grid-template-columns:1fr; gap:9px}
   .uses{grid-template-columns:1fr; gap:8px}
   .unzip .two{grid-template-columns:1fr}
-  .unzip .bad{border-right:0; border-bottom:1px solid var(--border)}
+  .unzip .win{border-right:0; border-bottom:1px solid var(--border)}
   .privacy{padding:30px 22px}
   .gate{padding:22px 18px}
 }
@@ -555,23 +563,37 @@ footer a{color:var(--soft)}
     </div>
 
     <!-- 擋在下載按鈕正下方，而且做得比周圍都吵。
-         實際發生了：使用者下載完直接雙擊 zip，檔案總管把壓縮檔假裝成
-         資料夾，他點了裡面的 exe —— 看起來一模一樣，但程式需要的檔案
-         沒有一起出來，必定失敗。程式裡有偵測會跳提示，但那已經是失敗
-         之後了。唯一攔得到他的位置，是他按下載的那一秒。 -->
+         唯一攔得到使用者的位置，是他按下載的那一秒 ——
+         程式裡雖然有偵測會跳提示，但那已經是失敗之後了。
+
+         這裡刻意「照系統切」，不照對錯切。理由是兩個系統會犯的錯根本不同：
+
+         Windows：檔案總管把 zip 假裝成資料夾，讓他點得進去、點得到 exe，
+           但程式需要的檔案沒有一起出來，必定失敗。
+         Mac：Finder 不讓你進到 zip 裡面，所以上面那個錯在 Mac 上做不出來。
+           Mac 真正會卡的是「留在下載項目裡開」—— 每次執行路徑都不一樣，
+           輔助使用權限打了勾下次開又不算數（見下面 #install）。
+
+         舊版把兩個系統塞進同一欄，於是 Mac 最容易卡的那一步縮成一個
+         逗號子句，而左邊整欄的警告對 Mac 使用者不成立。 -->
     <div class="unzip">
-      <div class="head">⚠︎　下載完的是壓縮檔，<b>先解壓縮再打開</b></div>
+      <div class="head">⚠︎　打開之前，有一步<b>不能跳過</b></div>
       <div class="two">
-        <div class="bad">
-          <div class="mark">✗　直接在壓縮檔裡點</div>
-          <p>壓縮檔<b>看起來就像資料夾</b>，點得進去、也看得到程式 ——
+        <div class="win">
+          <div class="mark">Windows</div>
+          <p class="step"><b>先解壓縮</b>，再點裡面的程式</p>
+          <p>對著 zip 按<b>右鍵</b> →「<b>解壓縮全部</b>」，進到解壓出來的資料夾再點。<br>
+            <span class="no">✗ 不要直接在壓縮檔裡點</span> ——
+            壓縮檔<b>看起來就像資料夾</b>，點得進去、也看得到程式，
             但點下去一定失敗，而且不會告訴你為什麼。</p>
         </div>
-        <div class="good">
-          <div class="mark">✓　先解壓縮</div>
-          <p><b>Windows</b>：對著 zip 按<b>右鍵</b> →「<b>解壓縮全部</b>」，
-            進到解壓出來的資料夾再點。<br>
-            <b>Mac</b>：<b>雙擊 zip</b> 解開，再把 App <b>拖進「應用程式」</b>。</p>
+        <div class="mac">
+          <div class="mark">Mac</div>
+          <p class="step">解壓縮後，把 App <b>拖進「應用程式」</b></p>
+          <p>用 Safari 下載的話多半已經自動解開了，直接拖就好。<br>
+            <span class="no">✗ 不要留在「下載項目」裡開</span> ——
+            那樣每次執行的路徑都不一樣，<b>權限打了勾下次開又不算數</b>。
+            這是 Mac 最多人卡住的一關。</p>
         </div>
       </div>
     </div>
